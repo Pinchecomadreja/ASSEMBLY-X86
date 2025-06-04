@@ -12,20 +12,21 @@
 					;manda en ss:[bp+6] offset texto
 					;manda en ss:[bp+4] offset largo
 					;cuenta el largo
-					;devuelve en dx offset largo
+					;carga el largo en VAR largo
+					;devuelve en cx reg largo
 	public print
 					;recibe VAR offset en dx
 					;imprime contenido en dx
 	public delchar
-					;manda en ss:[bp+6] offset texto
-					;manda en ss:[bp+4] offset texto aux
+					;recibe por 2 elementos por stack
+					;recibe ss:[bp+6]->offset texto
+					;recibe ss:[bp+4]->offset auxtexto
+					;pide por int 21h delchar y guarda en dl
+					;compara en dl con offset texto
+					;carga texto sin delchar en auxtexto
 
 	cargatexto proc
-		;recibe etiqueta
-		;recibe input del usuario
-		;carga los caracteres en la etiqueta y vuelve a main
-		
-		;registros a usar
+
 		push bx
 		push ax
 
@@ -45,8 +46,6 @@
 
 
 		fincarga:
-			
-			;registros usados
 			pop ax
 			pop bx
 			
@@ -83,7 +82,7 @@
 			inc cx
 			inc si
 		jmp espacios
-
+		
 		reg2ascii:
 			inc cx
 			add bx,2
@@ -153,8 +152,8 @@
 
 		mov dl,al
 
-		mov bx,ss:[bp+6]
-		mov si,ss:[bp+4]
+		mov bx,ss:[bp+6];texto
+		mov si,ss:[bp+4];auxtexto
 
 		pisar:
 			cmp byte ptr[bx],0dh

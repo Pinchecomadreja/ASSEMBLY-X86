@@ -8,7 +8,7 @@
 	espacio		db "",0dh,0ah,24h
 	texto 		db 255 dup (24h),0dh,0ah,24h
 	auxtexto 	db 255 dup (24h),0dh,0ah,24h
-	largo 	db '000',0dh,0ah,24h
+	largo 		db '000',0dh,0ah,24h
 .code
 	extrn cargatexto:proc
 					;recibe VAR offset en dx
@@ -23,6 +23,12 @@
 					;recibe VAR offset en dx
 					;imprime contenido en dx
 	extrn delchar:proc
+					;recibe por 2 elementos por stack
+					;recibe ss:[bp+6]->offset texto
+					;recibe ss:[bp+4]->offset auxtexto
+					;pide por int 21h delchar y guarda en dl
+					;compara en dl con offset texto
+					;carga texto sin delchar en auxtexto
 
 	main proc
 
@@ -53,8 +59,20 @@
 	mov dx,offset largo
 	int 21h
 
+	mov dx,offset texto
+	push dx
+
+	mov dx,offset auxtexto
+	push dx
+
+	call delchar
+
 	mov ah,9
-	mov dx,cx
+	mov dx,offset espacio
+	int 21h
+
+	mov ah,9
+	mov dx,offset auxtexto
 	int 21h
 
 	mov ah,4ch
@@ -62,3 +80,4 @@
 
 	main endp
 end
+
